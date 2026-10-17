@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Захищений вхід - RSA</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>Захищений вхід - RSA</h1>
+</header>
+
+<main>
+  <div class="grid">
+    <section class="card">
+      <h2><span class="step">1</span> Ключі</h2>
+      <div class="row">
+        <div>
+          <label for="keySize">Розмір ключа клієнта</label>
+          <select id="keySize">
+            <option value="2048">2048 біт</option>
+            <option value="3072">3072 біти</option>
+            <option value="4096">4096 біт</option>
+          </select>
+        </div>
+        <div>
+          <label for="oaepHash">Хеш-функція OAEP</label>
+          <select id="oaepHash">
+            <option value="SHA-256">SHA-256 (як на сервері)</option>
+            <option value="SHA-1">SHA-1 (несумісно з сервером)</option>
+          </select>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="prepareKeys">Отримати ключ сервера та згенерувати ключі клієнта</button>
+      </div>
+      <div id="keyStatus" class="msg"></div>
+      <div class="keys">
+        <div>
+          <h3>Відкритий ключ сервера</h3>
+          <dl id="serverKey"><dt>Стан</dt><dd>не отримано</dd></dl>
+        </div>
+        <div>
+          <h3>Ключі клієнта</h3>
+          <dl id="clientKey"><dt>Стан</dt><dd>не згенеровано</dd></dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="step">2</span> Вхід</h2>
+      <label for="login">Логін</label>
+      <input id="login" type="text" value="milana" autocomplete="username">
+      <label for="password">Пароль</label>
+      <input id="password" type="password" value="Secret123!" autocomplete="current-password">
+      <div class="actions">
+        <button class="btn primary" id="send" disabled>Увійти</button>
+        <button class="btn" id="showPassword">Показати пароль</button>
+      </div>
+      <div id="result" class="msg"></div>
+      <dl id="response" class="response"></dl>
+    </section>
+  </div>
+
+  <section class="card wide">
+    <h2><span class="step">3</span> Мережевий обмін <span class="sub">- те, що бачить будь-хто в незахищеному каналі</span></h2>
+    <div id="traffic" class="traffic"><p class="hint">Тут з'являться запит і відповідь у тому вигляді, в якому вони передаються мережею.</p></div>
+  </section>
+</main>
+
+<script src="rsa-client.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
