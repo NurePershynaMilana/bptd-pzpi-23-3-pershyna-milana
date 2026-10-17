@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DES - шифрування та розшифрування</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>DES - шифрування та розшифрування</h1>
+</header>
+<nav>
+  <button data-tab="crypt" class="active">Шифрування</button>
+  <button data-tab="entropy">Ентропія</button>
+  <button data-tab="rounds">Раунди</button>
+  <button data-tab="weak">Слабкі ключі</button>
+</nav>
+
+<main>
+  <!-- ===== Вкладка «Шифрування» ===== -->
+  <section id="crypt" class="tab active">
+    <div class="grid">
+      <div class="card">
+        <h2>Вхідні дані</h2>
+        <div class="row">
+          <div>
+            <label for="inFormat">Формат вхідних даних</label>
+            <select id="inFormat">
+              <option value="text">Текст (UTF-8)</option>
+              <option value="hex">HEX</option>
+            </select>
+          </div>
+        </div>
+        <label for="input">Відкритий текст або шифротекст</label>
+        <textarea id="input">Безпека програм та даних - лабораторна робота №1</textarea>
+
+        <div class="row">
+          <div>
+            <label for="keyFormat">Формат ключа</label>
+            <select id="keyFormat">
+              <option value="text">Текст (8 символів ASCII)</option>
+              <option value="hex">HEX (16 цифр)</option>
+            </select>
+          </div>
+          <div>
+            <label for="key">Ключ (64 біти)</label>
+            <input id="key" type="text" class="mono" value="Milana23">
+          </div>
+          <div class="narrow"><button class="btn small" id="genKey">Випадковий</button></div>
+        </div>
+        <div id="keyStatus"></div>
+
+        <div class="row">
+          <div>
+            <label for="mode">Режим</label>
+            <select id="mode">
+              <option value="ECB">ECB - кожен блок окремо</option>
+              <option value="CBC">CBC - зчеплення блоків</option>
+            </select>
+          </div>
+          <div>
+            <label for="iv">IV для CBC (HEX, 8 байтів)</label>
+            <input id="iv" type="text" class="mono" value="0011223344556677">
+          </div>
+          <div class="narrow"><button class="btn small" id="genIv">Випадковий</button></div>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" id="encrypt">Зашифрувати</button>
+          <button class="btn primary" id="decrypt">Розшифрувати</button>
+          <button class="btn" id="swap">↓ Результат у вхідні дані</button>
+          <button class="btn" id="testVector">Тестовий вектор</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Результат</h2>
+        <label>Результат (HEX)</label>
+        <div class="out" id="outHex">-</div>
+        <label>Результат як текст</label>
+        <div class="out" id="outText">-</div>
+        <div class="stats">
+          <div class="stat"><b id="stBlocks">-</b><span>блоків по 64 біти</span></div>
+          <div class="stat"><b id="stInH">-</b><span>ентропія на вході</span></div>
+          <div class="stat"><b id="stOutH">-</b><span>ентропія на виході</span></div>
+        </div>
+        <div id="message" class="msg"></div>
+        <p class="hint">Повідомлення доповнюється до кратного 8 байтам за схемою PKCS#7. Розшифрування приймає шифротекст у форматі HEX.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Вкладка «Ентропія» ===== -->
+  <section id="entropy" class="tab">
+    <div class="card">
+      <h2>Ентропія появи одиничного біта на кожному етапі</h2>
+      <p class="hint">H = −p·log₂p − (1−p)·log₂(1−p), де p - частка бітів, що дорівнюють 1, у блоці L‖R. Максимум H = 1 біт досягається при p = 0,5.</p>
+      <div class="row" style="margin-top:8px">
+        <div>
+          <label for="entropyScope">Дані для розрахунку</label>
+          <select id="entropyScope"></select>
+        </div>
+      </div>
+      <div id="chart" style="margin-top:14px"></div>
+      <div class="scroll"><table id="entropyTable"></table></div>
+    </div>
+  </section>
+
+  <!-- ===== Вкладка «Раунди» ===== -->
+  <section id="rounds" class="tab">
+    <div class="card">
+      <h2>Покрокове трасування мережі Фейстеля</h2>
+      <div class="row">
+        <div><label for="roundBlock">Блок</label><select id="roundBlock"></select></div>
+      </div>
+      <div id="roundHead" class="hint" style="margin-top:10px"></div>
+      <div class="scroll" style="margin-top:10px"><table id="roundTable"></table></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h2>Раундові ключі</h2>
+      <div id="subkeyHead" class="hint"></div>
+      <div class="scroll" style="margin-top:10px"><table id="subkeyTable"></table></div>
+    </div>
+  </section>
+
+  <!-- ===== Вкладка «Слабкі ключі» ===== -->
+  <section id="weak" class="tab">
+    <div class="grid">
+      <div class="card">
+        <h2>Перевірка ключа</h2>
+        <label for="checkHex">Ключ (HEX, 16 цифр)</label>
+        <div class="row">
+          <div><input id="checkHex" type="text" class="mono" value="0101010101010101"></div>
+          <div class="narrow"><button class="btn primary" id="checkBtn">Перевірити</button></div>
+        </div>
+        <div id="checkResult"></div>
+        <div id="doubleResult" class="out" style="margin-top:12px">-</div>
+        <p class="hint">Для слабкого ключа повторне шифрування тим самим ключем повертає відкритий текст. Для напівслабкого - шифрування парним ключем.</p>
+      </div>
+      <div class="card">
+        <h2>Відомі слабкі та напівслабкі ключі</h2>
+        <div class="scroll"><table id="weakTable"></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="des.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
